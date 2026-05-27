@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agents IA & LLMs — Panorama 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f7f5f1;
+            color: #1c1917;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse 60% 50% at 10% 10%, rgba(204, 120, 92, 0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 90% 90%, rgba(66, 133, 244, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 56px 24px 32px;
+        }
+
+        .pill {
+            display: inline-block;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #92918d;
+            border: 1px solid #d6d3ce;
+            border-radius: 100px;
+            padding: 4px 16px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: clamp(36px, 5.5vw, 64px);
+            font-weight: 400;
+            letter-spacing: -0.025em;
+            margin: 0 0 14px 0;
+            line-height: 1.1;
+            color: #1c1917;
+        }
+
+        h1 em {
+            color: #a8a29e;
+            font-style: italic;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #78716c;
+            margin: 0;
+            line-height: 1.75;
+            font-family: system-ui, sans-serif;
+        }
+
+        .subtitle-mono {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #a8a29e;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 0 24px 28px;
+        }
+
+        .filter-btn {
+            padding: 7px 18px;
+            border-radius: 100px;
+            border: 1px solid #d6d3ce;
+            background: #fff;
+            color: #78716c;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: system-ui, sans-serif;
+            transition: all 0.16s;
+            font-weight: 400;
+        }
+
+        .filter-btn:hover {
+            background: #f0ede8;
+        }
+
+        .filter-btn.active {
+            background: #1c1917;
+            color: #f7f5f1;
+            border-color: #1c1917;
+            font-weight: 700;
+        }
+
+        .count-badge {
+            font-size: 11px;
+            color: #a8a29e;
+            font-family: 'Courier New', monospace;
+            margin-left: 4px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 0 24px 56px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e7e4df;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.055);
+            overflow: hidden;
+            transition: box-shadow 0.22s, border-color 0.22s;
+        }
+
+        .card.expanded {
+            box-shadow: 0 12px 48px var(--card-color-shadow), 0 2px 8px rgba(0, 0, 0, 0.07);
+        }
+
+        .card-stripe {
+            height: 4px;
+            width: 100%;
+        }
+
+        .card-body {
+            padding: 18px 20px 20px;
+        }
+
+        .card-head {
+            margin-bottom: 10px;
+        }
+
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 3px;
+        }
+
+        .agent-name {
+            font-size: 19px;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Georgia', serif;
+            letter-spacing: -0.02em;
+            cursor: pointer;
+        }
+
+        .agent-name:hover {
+            opacity: 0.8;
+        }
+
+        .flag {
+            font-size: 15px;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 2px 9px;
+            border-radius: 100px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid;
+        }
+
+        .maker {
+            font-size: 11px;
+            color: #a8a29e;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.05em;
+        }
+
+        .tagline {
+            font-size: 13px;
+            font-weight: 600;
+            color: #44403c;
+            font-family: system-ui, sans-serif;
+            margin-bottom: 6px;
+        }
+
+        .desc {
+            font-size: 13px;
+            color: #78716c;
+            line-height: 1.65;
+            font-family: system-ui, sans-serif;
+            margin: 0 0 12px 0;
+        }
+
+        .chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .chip {
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            padding: 2px 10px;
+            border-radius: 100px;
+            border: 1px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .pricing-box {
+            background: #f9f7f3;
+            border: 1px solid #ede9e3;
+            border-radius: 10px;
+            padding: 11px 14px;
+            margin-bottom: 14px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #b2afa9;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .plan-name {
+            font-size: 12px;
+            color: #78716c;
+            font-family: system-ui, sans-serif;
+        }
+
+        .plan-price {
+            font-size: 12px;
+            color: #1c1917;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            text-align: right;
+        }
+
+        .toggle-btn {
+            display: block;
+            width: 100%;
+            padding: 9px 0;
+            border-radius: 8px;
+            border: 1px solid;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.04em;
+            transition: all 0.16s;
+        }
+
+        .toggle-btn:hover {
+            opacity: 0.8;
+        }
+
+        .expand-wrap {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #ede9e3;
+            display: none;
+        }
+
+        .expand-wrap.show {
+            display: block;
+        }
+
+        .expand-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .feature-txt {
+            font-size: 12px;
+            color: #57534e;
+            line-height: 1.5;
+            font-family: system-ui, sans-serif;
+        }
+
+        .visit-btn {
+            display: inline-block;
+            padding: 9px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            font-family: system-ui, sans-serif;
+            transition: opacity 0.2s;
+        }
+
+        .visit-btn:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 0 24px 48px;
+            font-size: 11px;
+            color: #b2afa9;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 640px) {
+            .expand-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="pill">Panorama · Avril 2026</div>
+            <h1>Agents IA <em>&amp;</em> LLMs</h1>
+            <p class="subtitle">
+                Code · Texte · Multimodal · Plateformes · Routage<br>
+                <span class="subtitle-mono">Tarifs vérifiés · 11 solutions comparées</span>
+            </p>
+        </header>
+
+        <div class="filter-row" id="filterRow"></div>
+
+        <div class="grid" id="grid"></div>
+
+        <footer>Tarifs indicatifs au 22 avril 2026 — vérifiez les pages officielles avant décision.</footer>
+    </div>
+
+    <script>
+        const agents = [
+            {
+                id: "codex",
+                name: "Codex",
+                maker: "OpenAI",
+                flag: "🇺🇸",
+                url: "https://openai.com/fr-FR/codex/",
+                category: ["code"],
+                tagline: "Agent de codage cloud autonome",
+                description: "Travaille en tâche de fond sur des missions longues en parallèle. Supporte AGENTS.md / SKILL.md, l'orchestration multi-agents et l'intégration MCP.",
+                badge: "Cloud",
+                badgeColor: "#10a37f",
+                pricing: [
+                    { label: "Free", price: "Gratuit" },
+                    { label: "ChatGPT Plus", price: "$20 / mois" },
+                    { label: "ChatGPT Pro", price: "$200 / mois" },
+                    { label: "API", price: "Pay-per-token" },
+                ],
+                features: ["AGENTS.md / SKILL.md", "Sous-agents parallèles", "Intégration MCP", "Exécution sandbox", "PRs GitHub auto"],
+                useCases: ["Refactoring massif", "Migration de codebase", "Tests auto"],
+                color: "#10a37f",
+            },
+            {
+                id: "copilot",
+                name: "GitHub Copilot",
+                maker: "Microsoft",
+                flag: "🇺🇸",
+                url: "https://github.com/features/copilot/",
+                category: ["code"],
+                tagline: "Agent IA intégré à GitHub & IDE",
+                description: "Mode agent dans VS Code, JetBrains et autres IDEs + agent cloud natif sur GitHub.com. Multi-modèles.",
+                badge: null,
+                pricing: [
+                    { label: "Free", price: "Gratuit" },
+                    { label: "Pro (Université)", price: "Gratuit pour étudiants et enseignants" },
+                    { label: "Pro", price: "$20 / mois" },
+                    { label: "Business", price: "$19 / utilisateur / mois" },
+                    { label: "Enterprise", price: "$39 / utilisateur / mois" },
+                ],
+                features: ["Mode agent IDE", "Agent cloud GitHub.com", "Instructions repo", "Review de PR auto", "Multi-modèles"],
+                useCases: ["Complétion de code", "Review PR", "Fix de bugs en CI"],
+                color: "#6e40c9",
+            },
+            {
+                id: "claude-code",
+                name: "Claude Code",
+                maker: "Anthropic",
+                flag: "🇺🇸",
+                url: "https://claude.com/product/claude-code",
+                category: ["code"],
+                tagline: "Agent terminal & IDE avec hooks",
+                description: "Agent de codage en ligne de commande et IDE. CLAUDE.md pour les instructions, skills et intégration MCP complète.",
+                badge: "⭐ Top",
+                badgeColor: "#cc785c",
+                pricing: [
+                    { label: "Claude Pro", price: "$20 / mois" },
+                    { label: "Claude Max", price: "$100 / mois" },
+                    { label: "API Sonnet", price: "~$3 / MTok" },
+                ],
+                features: ["CLAUDE.md / SKILL.md", "Hooks pre/post action", "Intégration MCP", "Terminal + IDE", "Accès bash natif"],
+                useCases: ["Dev autonome", "Ops DevOps", "Pipelines CI/CD"],
+                color: "#cc785c",
+            },
+            {
+                id: "cursor",
+                name: "Cursor",
+                maker: "Anysphere",
+                flag: "🇺🇸",
+                url: "https://cursor.com",
+                category: ["code"],
+                tagline: "IDE IA natif — le plus utilisé",
+                description: "Éditeur de code (fork VS Code) entièrement pensé pour l'IA. Mode Composer, agent autonome, contexte de codebase entier.",
+                badge: "🔥 Populaire",
+                badgeColor: "#e64d00",
+                pricing: [
+                    { label: "Hobby", price: "Gratuit" },
+                    { label: "Pro", price: "$20 / mois" },
+                    { label: "Ultra", price: "$200 / mois" },
+                    { label: "Business", price: "$40 / siège / mois" },
+                ],
+                features: ["IDE natif IA", "Composer multi-fichiers", "Agent autonome", "Multi-modèles", "Contexte codebase entier"],
+                useCases: ["Dev quotidien", "Refactoring", "Génération de composants"],
+                color: "#e64d00",
+            },
+            {
+                id: "windsurf",
+                name: "Windsurf",
+                maker: "Codeium",
+                flag: "🇺🇸",
+                url: "https://windsurf.com",
+                category: ["code"],
+                tagline: "IDE agentique avec Cascade",
+                description: "IDE IA (fork VS Code) avec Cascade, son assistant agentique. Autocomplete illimitée, déploiement intégré.",
+                badge: null,
+                pricing: [
+                    { label: "Free", price: "Gratuit (25 crédits/mois)" },
+                    { label: "Pro", price: "$15 / mois" },
+                    { label: "Teams", price: "$30 / utilisateur / mois" },
+                    { label: "Enterprise", price: "$60 / utilisateur / mois" },
+                ],
+                features: ["Agent Cascade", "Autocomplete Tab illimitée", "Déploiement intégré", "SWE-1.5", "Plugins pour autres éditeurs"],
+                useCases: ["Dev agentique", "App deployment", "Équipes budget"],
+                color: "#0ea5e9",
+            },
+            {
+                id: "devin",
+                name: "Devin",
+                maker: "Cognition AI",
+                flag: "🇺🇸",
+                url: "https://devin.ai",
+                category: ["code"],
+                tagline: "Ingénieur logiciel IA autonome",
+                description: "Prend en charge des tickets Jira/Linear/Slack, écrit le code, crée des PRs et itère — tout seul.",
+                badge: "Autonome",
+                badgeColor: "#7c3aed",
+                pricing: [
+                    { label: "Core", price: "$20/mois + $2,25/ACU" },
+                    { label: "Team", price: "$500/mois (250 ACUs)" },
+                    { label: "Enterprise", price: "Sur devis" },
+                ],
+                features: ["Ingénieur IA autonome", "Intégration Jira/Linear/Slack", "Création de PRs auto", "IDE + shell + navigateur cloud", "Facturation à l'effort"],
+                useCases: ["Tickets autonomes", "Migration legacy", "Équipes sans dev dispo"],
+                color: "#7c3aed",
+            },
+            {
+                id: "replit",
+                name: "Replit",
+                maker: "Replit Inc.",
+                flag: "🇺🇸",
+                url: "https://replit.com",
+                category: ["code", "platform"],
+                tagline: "De l'idée à l'app, dans le navigateur",
+                description: "Environnement de dev entièrement cloud avec Agent 3. De l'idée à l'appli déployée sans quitter le navigateur.",
+                badge: "No-code friendly",
+                badgeColor: "#d97706",
+                pricing: [
+                    { label: "Starter", price: "Gratuit" },
+                    { label: "Core", price: "$20/mois" },
+                    { label: "Pro", price: "$100/mois (15 builders)" },
+                    { label: "Enterprise", price: "Sur devis" },
+                ],
+                features: ["Agent 3 autonome", "Déploiement 1-clic", "Collaboration temps réel", "Support multi-langages", "Base de données incluse"],
+                useCases: ["Vibe coding", "Prototypes rapides", "Apps sans DevOps"],
+                color: "#d97706",
+            },
+            {
+                id: "opencode",
+                name: "OpenCode",
+                maker: "Open Source",
+                flag: "🌐",
+                url: "https://opencode.ai",
+                category: ["code"],
+                tagline: "Agent de codage open-source",
+                description: "Alternative open-source. Compatible AGENTS.md, fonctionne avec n'importe quel provider. Auto-hébergeable.",
+                badge: "Open Source",
+                badgeColor: "#16a34a",
+                pricing: [
+                    { label: "Outil", price: "Gratuit" },
+                    { label: "Modèle", price: "Selon provider" },
+                ],
+                features: ["100% open-source", "Compatible AGENTS.md", "Multi-providers", "Auto-hébergeable", "Extensible"],
+                useCases: ["Indépendance provider", "On-premise", "Customisation totale"],
+                color: "#16a34a",
+            },
+            {
+                id: "gemini",
+                name: "Gemini",
+                maker: "Google",
+                flag: "🇺🇸",
+                url: "https://gemini.google.com/",
+                category: ["code", "multimodal", "text"],
+                tagline: "Agent multimodal avec outils Google",
+                description: "Agent multimodal avec accès natif à la recherche Google, exécution de code, fichiers Drive/Docs.",
+                badge: null,
+                pricing: [
+                    { label: "Free", price: "Gratuit" },
+                    { label: "Advanced", price: "$19,99 / mois" },
+                    { label: "API Flash", price: "~$0,10 / MTok" },
+                    { label: "API Pro", price: "~$1,25 / MTok" },
+                ],
+                features: ["Multimodal (texte, image, audio, vidéo)", "Recherche Google native", "Exécution de code", "Accès Google Drive/Docs", "Contexte 1M tokens"],
+                useCases: ["Recherche augmentée", "Analyse de docs", "Code + data science"],
+                color: "#4285f4",
+            },
+            {
+                id: "mistral",
+                name: "Mistral",
+                maker: "Mistral AI",
+                flag: "🇫🇷",
+                url: "https://mistral.ai/",
+                category: ["text", "code"],
+                tagline: "LLM européen, souverain & RGPD",
+                description: "Modèles français avec hébergement en Europe. Alternative souveraine pour les entreprises RGPD-sensibles.",
+                badge: "🇫🇷 Souverain",
+                badgeColor: "#1d4ed8",
+                pricing: [
+                    { label: "Le Chat Free", price: "Gratuit" },
+                    { label: "Le Chat Pro", price: "€14,99 / mois" },
+                    { label: "API Ministral", price: "À partir de €0,10/MTok" },
+                    { label: "API Large", price: "€2 / MTok" },
+                ],
+                features: ["Hébergement en Europe", "RGPD compliant", "Agents Le Chat", "Fine-tuning disponible", "API OpenAI-compatible"],
+                useCases: ["Données sensibles EU", "Conformité RGPD", "Texte FR/multilangue"],
+                color: "#1d4ed8",
+            },
+            {
+                id: "openrouter",
+                name: "OpenRouter",
+                maker: "Open Source",
+                flag: "🌐",
+                url: "https://openrouter.ai/",
+                category: ["routing"],
+                tagline: "Couche de routage multi-modèles unifiée",
+                description: "Agrégateur d'APIs : accès à +300 modèles via une seule API OpenAI-compatible.",
+                badge: null,
+                pricing: [
+                    { label: "Gratuit", price: "Certains modèles gratuits" },
+                    { label: "Pay-as-you-go", price: "Prix modèle + ~2%" },
+                ],
+                features: ["+300 modèles disponibles", "API unifiée", "Routage & fallback auto", "Comparaison prix réelle", "Streaming & batch"],
+                useCases: ["Agrégation de modèles", "A/B testing LLMs", "Réduction de coûts"],
+                color: "#9c27b0",
+            },
+        ];
+
+        const CATS = [
+            { id: "all", label: "Tous" },
+            { id: "code", label: "💻 Code" },
+            { id: "text", label: "✍️ Texte" },
+            { id: "multimodal", label: "🎨 Multimodal" },
+            { id: "platform", label: "🚀 Plateforme" },
+            { id: "routing", label: "🔀 Routage" },
+        ];
+
+        let activeCategory = "all";
+        let expandedCard = null;
+
+        function renderFilters() {
+            const filterRow = document.getElementById("filterRow");
+            CATS.forEach((cat) => {
+                const btn = document.createElement("button");
+                btn.className = `filter-btn${activeCategory === cat.id ? " active" : ""}`;
+                btn.textContent = cat.label;
+                btn.onclick = () => filterByCategory(cat.id);
+                filterRow.appendChild(btn);
+            });
+
+            const filtered = activeCategory === "all" ? agents : agents.filter((a) => a.category.includes(activeCategory));
+            const countSpan = document.createElement("span");
+            countSpan.className = "count-badge";
+            countSpan.textContent = `${filtered.length} outil${filtered.length > 1 ? "s" : ""}`;
+            filterRow.appendChild(countSpan);
+        }
+
+        function filterByCategory(category) {
+            activeCategory = category;
+            renderCards();
+            updateFilters();
+        }
+
+        function updateFilters() {
+            const buttons = document.querySelectorAll(".filter-btn");
+            const filtered = activeCategory === "all" ? agents : agents.filter((a) => a.category.includes(activeCategory));
+            
+            buttons.forEach((btn, idx) => {
+                btn.classList.toggle("active", CATS[idx].id === activeCategory);
+            });
+
+            const countSpan = document.querySelector(".count-badge");
+            countSpan.textContent = `${filtered.length} outil${filtered.length > 1 ? "s" : ""}`;
+        }
+
+        function renderCards() {
+            const grid = document.getElementById("grid");
+            grid.innerHTML = "";
+
+            const filtered = activeCategory === "all" ? agents : agents.filter((a) => a.category.includes(activeCategory));
+
+            filtered.forEach((agent) => {
+                const card = createCard(agent);
+                grid.appendChild(card);
+            });
+        }
+
+        function createCard(agent) {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.style.setProperty("--card-color-shadow", `${agent.color}22`);
+
+            const stripe = document.createElement("div");
+            stripe.className = "card-stripe";
+            stripe.style.background = agent.color;
+            card.appendChild(stripe);
+
+            const body = document.createElement("div");
+            body.className = "card-body";
+
+            // Header
+            const head = document.createElement("div");
+            head.className = "card-head";
+
+            const nameRow = document.createElement("div");
+            nameRow.className = "name-row";
+
+            const link = document.createElement("a");
+            link.className = "agent-name";
+            link.href = agent.url;
+            link.target = "_blank";
+            link.textContent = agent.name + " ↗";
+            link.style.color = agent.color;
+            nameRow.appendChild(link);
+
+            const flag = document.createElement("span");
+            flag.className = "flag";
+            flag.textContent = agent.flag;
+            nameRow.appendChild(flag);
+
+            if (agent.badge) {
+                const badge = document.createElement("span");
+                badge.className = "badge";
+                badge.textContent = agent.badge;
+                badge.style.color = agent.badgeColor;
+                badge.style.background = `${agent.badgeColor}14`;
+                badge.style.borderColor = `${agent.badgeColor}40`;
+                nameRow.appendChild(badge);
+            }
+
+            head.appendChild(nameRow);
+
+            const maker = document.createElement("div");
+            maker.className = "maker";
+            maker.textContent = agent.maker;
+            head.appendChild(maker);
+
+            body.appendChild(head);
+
+            // Tagline
+            const tagline = document.createElement("div");
+            tagline.className = "tagline";
+            tagline.textContent = agent.tagline;
+            body.appendChild(tagline);
+
+            // Description
+            const desc = document.createElement("p");
+            desc.className = "desc";
+            desc.textContent = agent.description;
+            body.appendChild(desc);
+
+            // Chips
+            const chips = document.createElement("div");
+            chips.className = "chips";
+            agent.category.forEach((c) => {
+                const chip = document.createElement("span");
+                chip.className = "chip";
+                chip.textContent = c;
+                chip.style.color = agent.color;
+                chip.style.borderColor = `${agent.color}50`;
+                chips.appendChild(chip);
+            });
+            body.appendChild(chips);
+
+            // Pricing
+            const pricingBox = document.createElement("div");
+            pricingBox.className = "pricing-box";
+
+            const pricingLabel = document.createElement("div");
+            pricingLabel.className = "section-label";
+            pricingLabel.textContent = "Tarifs";
+            pricingBox.appendChild(pricingLabel);
+
+            agent.pricing.forEach((p) => {
+                const row = document.createElement("div");
+                row.className = "price-row";
+
+                const planName = document.createElement("span");
+                planName.className = "plan-name";
+                planName.textContent = p.label;
+                row.appendChild(planName);
+
+                const planPrice = document.createElement("span");
+                planPrice.className = "plan-price";
+                planPrice.textContent = p.price;
+                row.appendChild(planPrice);
+
+                pricingBox.appendChild(row);
+            });
+
+            body.appendChild(pricingBox);
+
+            // Toggle button
+            const toggleBtn = document.createElement("button");
+            toggleBtn.className = "toggle-btn";
+            toggleBtn.style.color = agent.color;
+            toggleBtn.style.borderColor = `${agent.color}40`;
+            toggleBtn.textContent = "▼ Détails";
+            toggleBtn.onclick = () => toggleExpand(agent.id, toggleBtn, expandWrap, agent.color);
+            body.appendChild(toggleBtn);
+
+            // Expanded content
+            const expandWrap = document.createElement("div");
+            expandWrap.className = "expand-wrap";
+
+            const expandGrid = document.createElement("div");
+            expandGrid.className = "expand-grid";
+
+            // Features column
+            const featuresCol = document.createElement("div");
+            const featuresLabel = document.createElement("div");
+            featuresLabel.className = "section-label";
+            featuresLabel.textContent = "Fonctionnalités";
+            featuresCol.appendChild(featuresLabel);
+
+            agent.features.forEach((f) => {
+                const item = document.createElement("div");
+                item.className = "feature-item";
+
+                const dot = document.createElement("span");
+                dot.className = "dot";
+                dot.style.background = agent.color;
+                item.appendChild(dot);
+
+                const txt = document.createElement("span");
+                txt.className = "feature-txt";
+                txt.textContent = f;
+                item.appendChild(txt);
+
+                featuresCol.appendChild(item);
+            });
+
+            expandGrid.appendChild(featuresCol);
+
+            // Use cases column
+            const useCasesCol = document.createElement("div");
+            const useCasesLabel = document.createElement("div");
+            useCasesLabel.className = "section-label";
+            useCasesLabel.textContent = "Cas d'usage";
+            useCasesCol.appendChild(useCasesLabel);
+
+            agent.useCases.forEach((u) => {
+                const item = document.createElement("div");
+                item.className = "feature-item";
+
+                const dot = document.createElement("span");
+                dot.className = "dot";
+                dot.style.background = agent.color;
+                item.appendChild(dot);
+
+                const txt = document.createElement("span");
+                txt.className = "feature-txt";
+                txt.textContent = u;
+                item.appendChild(txt);
+
+                useCasesCol.appendChild(item);
+            });
+
+            expandGrid.appendChild(useCasesCol);
+            expandWrap.appendChild(expandGrid);
+
+            // Visit button
+            const visitBtn = document.createElement("a");
+            visitBtn.className = "visit-btn";
+            visitBtn.href = agent.url;
+            visitBtn.target = "_blank";
+            visitBtn.textContent = `Visiter ${agent.name} →`;
+            visitBtn.style.background = agent.color;
+            expandWrap.appendChild(visitBtn);
+
+            body.appendChild(expandWrap);
+            card.appendChild(body);
+
+            return card;
+        }
+
+        function toggleExpand(agentId, btn, expandWrap, color) {
+            if (expandedCard === agentId) {
+                expandedCard = null;
+                expandWrap.classList.remove("show");
+                btn.textContent = "▼ Détails";
+                btn.style.background = "transparent";
+            } else {
+                // Close previous
+                const prevExpandWrap = document.querySelector(".expand-wrap.show");
+                if (prevExpandWrap) {
+                    prevExpandWrap.classList.remove("show");
+                }
+
+                expandedCard = agentId;
+                expandWrap.classList.add("show");
+                btn.textContent = "▲ Masquer";
+                btn.style.background = `${color}0e`;
+            }
+        }
+
+        // Initialize
+        renderFilters();
+        renderCards();
+    </script>
+</body>
+</html>
