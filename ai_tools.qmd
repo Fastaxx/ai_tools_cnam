@@ -74,34 +74,6 @@ format:
 Image credits: paper @img_copy_paper; programming photograph @img_computer_programmer.
 :::
 
-## Before / after AI agents
-
-::: {.grid2}
-::: {.card}
-<p class="cardtitle">Before</p>
-
-<p class="phase">Idea -> implementation details -> debugging -> documentation</p>
-
-- Repeated API and syntax searches
-- Boilerplate obscures the research question
-- Design decisions become hard to recover
-:::
-
-::: {.card .aftercard}
-<p class="cardtitle">Now, when it works</p>
-
-<p class="phase">Idea -> explicit constraints -> agent loop -> checked results</p>
-
-- I state the objective and invariants
-- The agent handles bounded implementation work
-- I inspect results and scientific meaning
-:::
-:::
-
-::: {.call}
-The gain is not less thinking. It is spending thinking time at the right level.
-:::
-
 ## An honest promise
 
 ::: {.columns}
@@ -169,7 +141,15 @@ Hallucination and evaluation discussion: @openai_hallucinate.
 :::
 :::
 
-## What agents can touch
+## What agents can do
+
+<div class="fouruses">
+<div><span class="useicon">PDF</span><strong>Literature</strong><small>query sources</small></div>
+<div><span class="useicon">{ }</span><strong>Software</strong><small>implement, test</small></div>
+<div><span class="useicon">fx</span><strong>Numerics</strong><small>run studies</small></div>
+<div><span class="useicon">TXT</span><strong>Writing</strong><small>draft, revise</small></div>
+</div>
+
 
 <div class="agentflow">
 <div class="node strong">Your intent</div>
@@ -181,37 +161,14 @@ Hallucination and evaluation discussion: @openai_hallucinate.
 <div class="node strong">Results</div>
 </div>
 
-<div class="iconrow">
-<div><strong>Read</strong><br>documents</div>
-<div><strong>Edit</strong><br>code or text</div>
-<div><strong>Run</strong><br>scripts and tests</div>
-<div><strong>Connect</strong><br>external tools</div>
-</div>
-
-::: {.sources}
-Tool connections are standardized in part through MCP: @mcp_intro.
-:::
-
-## Agents are not only for coding
-
-<div class="fouruses">
-<div><span class="useicon">PDF</span><strong>Literature</strong><small>query sources</small></div>
-<div><span class="useicon">{ }</span><strong>Software</strong><small>implement, test</small></div>
-<div><span class="useicon">fx</span><strong>Numerics</strong><small>run studies</small></div>
-<div><span class="useicon">TXT</span><strong>Writing</strong><small>draft, revise</small></div>
-</div>
 
 ::: {.titlebox .centertext}
 My highest-value use is not “write code for me.”  
 It is: **help me reach results I can check sooner.**
 :::
 
-## The available landscape
-
-![](images/Generative-AI-Landscape-Tools-1.png){fig-alt="Landscape of generative AI tools and agent products" width="78%" fig-align="center"}
-
 ::: {.sources}
-Landscape graphic reused from my previous seminar [previous deck, lines 184--190]. The market changes rapidly; this is an orientation slide, not a ranking.
+Tool connections are standardized in part through MCP: @mcp_intro.
 :::
 
 ## My survey of available tools {.smaller}
@@ -265,12 +222,11 @@ NotebookLM uses uploaded sources to answer requests: @google_notebooklm_sources.
 An implementation is cheap. A **validated result** is valuable.
 :::
 
-## Clear objective before prompt
+## Prompt quality: Objective and Detail
 
 ::: {.grid2}
 ::: {.card .badcard}
 <p class="cardtitle bad">Blurred request</p>
-
 ```text
 My simulation is unstable.
 Make it work.
@@ -293,25 +249,10 @@ Run the convergence tests.
 The clearer I am about the outcome, the less freedom the model has to invent the problem.
 :::
 
-## Minimum viable result first
-
-<div class="agentflow compact">
-<div class="node strong">One question</div>
-<div class="arrow">-></div>
-<div class="node">One small case</div>
-<div class="arrow">-></div>
-<div class="node">One invariant</div>
-<div class="arrow">-></div>
-<div class="node strong">Iterate</div>
-</div>
-
-::: {.titlebox .centertext}
-Not “implement the full method.”  
-First: **test one flux on one manufactured solution.**
-:::
-
 ## Detailed prompts are worth it
 
+::: {.columns}
+::: {.column width="52%"}
 <div class="promptframe">
 <div><strong>Objective</strong><span>what must change?</span></div>
 <div><strong>Context</strong><span>which files and references?</span></div>
@@ -321,10 +262,37 @@ First: **test one flux on one manufactured solution.**
 </div>
 
 ::: {.call}
-A serious prompt may be dozens or hundreds of lines: equations, tests, examples, rejected attempts and expected output.
+A serious prompt may be dozens or hundreds of lines.
+:::
 :::
 
-## The prompt template I use
+::: {.column width="48%"}
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import numpy as np
+
+labels = ["Vague\nprompt", "Structured\nprompt"]
+tokens = [3800, 1100]
+colors = ["#e05252", "#4caf82"]
+
+fig, ax = plt.subplots(figsize=(4, 3))
+bars = ax.bar(labels, tokens, color=colors, width=0.5, zorder=3)
+ax.set_ylabel("Tokens used", fontsize=9)
+ax.set_title("Token usage: before / after", fontsize=10, pad=8)
+ax.set_ylim(0, 4500)
+ax.yaxis.grid(True, linestyle="--", alpha=0.5, zorder=0)
+ax.spines[["top", "right"]].set_visible(False)
+for bar, val in zip(bars, tokens):
+    ax.text(bar.get_x() + bar.get_width() / 2, val + 80,
+            f"{val:,}", ha="center", va="bottom", fontsize=9, fontweight="bold")
+fig.tight_layout()
+plt.savefig("images/token_reduction.png", dpi=150, bbox_inches="tight",
+            transparent=True)
+plt.show()
+```
+:::
+:::
 
 ::: {.small}
 ```text
@@ -333,27 +301,39 @@ Objective
 
 Context to read first
   Read src/<operator>, test/<nearest existing test>, docs/MATH.md.
-  Preserve the public API and the existing time integration scheme.
 
 Scientific constraints
-  The exact solution is ...
-  Evaluate L2 error at refinements [...]. Expected order >= ...
-  Do not claim convergence unless the fitted slope satisfies the threshold.
+  The exact solution is ... Evaluate L2 error at refinements [...].
 
 Implementation contract
   Start with a plan. Make the smallest patch. Run <command>.
-  If a test fails, diagnose before broadening the edit.
 
 Final response
   List changed files, commands run, numerical results and uncertainty.
 ```
 :::
 
-## Verification stays human-owned
+## Failure modes and verification
+
+::: {.grid2}
+::: {.card .goodcard}
+<p class="cardtitle good">Useful failures</p>
+
+- Wrong API name → caught by tests
+- Large patch → reduced during review
+:::
+
+::: {.card .badcard}
+<p class="cardtitle bad">Dangerous failures</p>
+
+- Plausible but false derivation
+- Relaxed tolerance hidden as success
+:::
+:::
 
 <div class="ladder">
 <div><span>1</span>Runs</div>
-<div><span>2</span>Regression test</div>
+<div><span>2</span>Regression</div>
 <div><span>3</span>Invariant</div>
 <div><span>4</span>Convergence</div>
 <div class="human"><span>5</span>Scientific meaning</div>
@@ -361,31 +341,6 @@ Final response
 
 ::: {.call}
 The agent can run checks. I decide whether the result supports a scientific claim.
-:::
-
-## Failure modes I encounter
-
-::: {.grid2}
-::: {.card .goodcard}
-<p class="cardtitle good">Useful failures</p>
-
-- Wrong API name, caught by tests
-- Missing import, found immediately
-- Large patch, reduced during review
-:::
-
-::: {.card .badcard}
-<p class="cardtitle bad">Dangerous failures</p>
-
-- Plausible but false derivation
-- A fix that changes the numerical problem
-- Relaxed tolerance hidden as success
-- Unsupported reference or result
-:::
-:::
-
-::: {.call}
-The dangerous errors are plausible. They are precisely why checks and review matter.
 :::
 
 ## Command review: keeping control
@@ -412,6 +367,26 @@ The dangerous errors are plausible. They are precisely why checks and review mat
 
 ::: {.sources}
 Command examples originate from my Claude CLI notes; exact commands vary by tool.
+:::
+
+## Claude Code CLI: what makes it useful
+
+::: {.titlebox}
+<p class="cardtitle">Built-in features</p>
+
+- **Memory** — `CLAUDE.md` loaded at start
+- **Skills** — reusable instructions (`/skill`)
+- **Hooks** — run shell commands on events
+- **MCP** — connect external tools via a protocol
+- **Subagents** — delegate subtasks in parallel
+:::
+
+::: {.call}
+The same model, extended by your project context and tools.
+:::
+
+::: {.sources}
+Claude Code documentation: @anthropic_claude_code_overview.
 :::
 
 ## Context is a limited resource
@@ -447,7 +422,7 @@ Search and formatting do not require the same reasoning budget as architecture o
 ::: {.titlebox}
 <p class="cardtitle">Persistent context</p>
 
-`AGENTS.md`  
+`AGENTS.md / CLAUDE.md`  
 build, test, conventions
 
 `MATH.md`  
