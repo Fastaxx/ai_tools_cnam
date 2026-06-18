@@ -434,7 +434,7 @@ reusable Julia workflow
 :::
 
 ::: {.column width="57%"}
-![](images/obsidian.png){fig-alt="Connected project notes in Obsidian" width="100%" fig-align="center"}
+![LLMwiki memory](images/obsidian.png){fig-alt="Connected project notes in Obsidian" width="100%" fig-align="center"}
 :::
 :::
 
@@ -540,6 +540,38 @@ One reusable instruction set, available across Julia tasks.
 Example Julia skill supplied for this talk; reusable Codex skills are documented in @openai_codex_skills.
 :::
 
+## Example of usage:
+
+3 agents working in parallel on a single project:
+
+::: {.columns}
+::: {.column width="33%"}
+![](images/climentpdf.png){fig-alt="Reproduction of benchmark from a pdf paper" width="100%" fig-align="center"}
+
+- Read and summarize a PDF paper.
+- Data extraction
+- Generate Julia code for reproduction.
+:::
+
+::: {.column width="33%"}
+![](images/climentpdf2.png){fig-alt="Implementation of the benchmark in our codebase" width="100%" fig-align="center"}
+
+- Implement the benchmark in our codebase.
+- Run convergence tests.
+- Compare and iterate.
+:::
+
+::: {.column width="33%"}
+![](images/claudeuse1.png){fig-alt="Implementation and verification of large refactoring" width="100%" fig-align="center"}
+
+- Implement large refactoring.
+- Run regression tests.
+- Verify against known results.
+:::
+:::
+
+
+
 ## Hosted models or local open-weight models?
 
 ::: {.threechoices}
@@ -635,6 +667,7 @@ They can free time for it.
 - Mistral coding models: <https://docs.mistral.ai/capabilities/code_generation/>
 - Mistral privacy / deployment: <https://docs.mistral.ai/models/deployment/>
 - MCP: <https://modelcontextprotocol.io/docs/getting-started/intro>
+- LLMwiki: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
 
 ## Cited documentation {.smaller}
 
